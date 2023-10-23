@@ -15,7 +15,7 @@ mongoose.set('strictQuery', true);
 
 //middlewares
 app.use(express.json())
-app.use(cors())
+app.use(cors({ origin: 'https://6535fcc512f69476a0f5d8a4--stellular-semifreddo-a8341f.netlify.app' }));
 
 //db config
 mongoose.connect(process.env.MONGO_URI, {
