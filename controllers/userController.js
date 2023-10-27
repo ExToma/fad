@@ -3,14 +3,12 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 
-//create token
 const createToken = (id) => {
     return jwt.sign({id}, process.env.JWT_SECRET, {
         expiresIn: 3 * 24 * 60 * 60
     })
 }
 
-//login user
 const loginUser = async (req,res) => {
     const {email, password} = req.body;
     try{
@@ -34,11 +32,9 @@ const loginUser = async (req,res) => {
     }
 }
 
-//register user
 const registerUser = async (req,res) => {
     const {name, email, password} = req.body;
     try{
-        //check if user already exists
         const exists = await userModel.findOne({email})
         if(exists){
             return res.status(400).json({message: "User already exists"})
@@ -65,7 +61,6 @@ const registerUser = async (req,res) => {
     }
 }
 
-//get user info
 const getUser = async (req,res) => {
     const id = req.user.id
     try{
@@ -75,4 +70,27 @@ const getUser = async (req,res) => {
         res.status(502).json({message: error.message})
     }
 }
-export {loginUser, registerUser, getUser}
+
+const deleteUser = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await userModel.findByIdAndRemove(id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json({ message: "User deleted" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await userModel.find().exec();
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export { loginUser, registerUser, getUser, deleteUser, getAllUsers };
